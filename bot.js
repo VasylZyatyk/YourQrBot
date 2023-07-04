@@ -51,13 +51,6 @@ bot.hears('🔍 Scan Barcode', (ctx) => {
   ctx.scene.enter('scanBarcode')
 })
 
-bot.hears('📁 Source code', (ctx) => {
-  ctx.reply(
-    'You can see code of this bot on GitHub. Thanks for stars!',
-    { reply_markup: { inline_keyboard: [[{text: '🔗 GitHub', url: 'https://github.com/Khuzha/oneqrbot'}]] } }
-  )
-})
-
 scanBarcode.enter((ctx) => {
   ctx.reply(
     'I`m ready. Send a picture!', 
@@ -66,10 +59,10 @@ scanBarcode.enter((ctx) => {
 })
 
 bot.command('share', async (ctx) => {
-  // Get the user's chat ID
+  // Get the user's chat id
   const chatId = ctx.message.chat.id;
 
-  // Get the user's most recent scanned QR code or barcode from the database
+  // Get the user's most recent scanned QR code  from the database
   const recentScan = await db.collection('scans').findOne({ chatId });
 
   // Check if the user has a recent scan to share
