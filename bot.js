@@ -25,7 +25,7 @@ mongo.connect(process.env.MONGO_LINK, { useNewUrlParser: true }, (err, client) =
     sendError(err)
   }
 
-  db = client.db('oneqrbot')
+  db = client.db('yourqrbot')
   bot.startPolling()
 })
 
