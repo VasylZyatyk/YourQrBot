@@ -11,7 +11,7 @@ const { leave } = Stage
 const stage = new Stage()
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-// Register scenes
+
 const scanQR = new Scene('scanQR')
 stage.register(scanQR)
 const generate = new Scene('generate')
@@ -19,26 +19,22 @@ stage.register(generate)
 const scanBarcode = new Scene('scanBarcode')
 stage.register(scanBarcode)
 
-// Connect to MongoDB
-mongo.connect(process.env.MONGO_LINK, { useNewUrlParser: true }, (err, client) => {
-  if (err) {
-    sendError(err)
-  }
+mongo.connect(process.env.MONGO_LINK, { useNewUrlParser: true })
+  .then(client => {
+    db = client.db('yourqrbot')
+    bot.startPolling()
+  })
+  .catch(err => sendError(err))
 
-  db = client.db('yourqrbot')
-  bot.startPolling()
-})
-
-// Use session and stage middleware
 bot.use(session())
 bot.use(stage.middleware())
 
-// Start command
+
 bot.start((ctx) => {
   starter(ctx)
 })
 
-// Handle menu options
+// 
 bot.hears('🔍 Scan QR Code', (ctx) => {
   ctx.scene.enter('scanQR')
 })
@@ -59,10 +55,10 @@ scanBarcode.enter((ctx) => {
 })
 
 bot.command('share', async (ctx) => {
-  // Get the user's chat id
+  // Get the user chat id
   const chatId = ctx.message.chat.id;
 
-  // Get the user's most recent scanned QR code  from the database
+  // Get the user most recent scanned QR code  from the database
   const recentScan = await db.collection('scans').findOne({ chatId });
 
   // Check if the user has a recent scan to share
@@ -70,7 +66,7 @@ bot.command('share', async (ctx) => {
     // Ask the user to enter the chat ID of the user they want to share the scan with
     ctx.reply('Please enter the chat ID of the user you want to share your scan with:');
 
-    // Listen for the user's response
+    // Listen for the user response
     bot.on('text', async (ctx) => {
       // Get the target chat ID from the user's message
       const targetChatId = ctx.message.text;
